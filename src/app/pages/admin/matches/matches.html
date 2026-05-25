@@ -1,0 +1,193 @@
+<app-navbar />
+
+<main class="matches-page">
+  <section class="page-header">
+    <div>
+      <p class="eyebrow">Admin</p>
+      <h1>Partidos</h1>
+    </div>
+  </section>
+
+  <section class="content-grid">
+    <mat-card class="form-card">
+      <mat-card-header>
+        <mat-card-title>{{ isEditing ? 'Editar partido' : 'Crear partido' }}</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <form [formGroup]="form" id="match-form" class="match-form" (ngSubmit)="onSubmit()">
+          <mat-form-field appearance="outline" class="full-row">
+            <mat-label>Torneo</mat-label>
+            <mat-select formControlName="torneoId" (selectionChange)="onTournamentChange()">
+              @for (tournament of tournaments; track tournament.id) {
+                <mat-option [value]="tournament.id">{{ tournament.nombre }}</mat-option>
+              }
+            </mat-select>
+            @if (form.controls.torneoId.touched && form.controls.torneoId.hasError('required')) {
+              <mat-error>Selecciona un torneo.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Equipo A</mat-label>
+            <mat-select formControlName="equipoAId">
+              @for (team of availableTeams; track team.id) {
+                <mat-option [value]="team.id">{{ team.nombre }} ({{ team.tag }})</mat-option>
+              }
+            </mat-select>
+            @if (form.controls.equipoAId.touched && form.controls.equipoAId.hasError('required')) {
+              <mat-error>Selecciona el equipo A.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Equipo B</mat-label>
+            <mat-select formControlName="equipoBId">
+              @for (team of availableTeams; track team.id) {
+                <mat-option [value]="team.id">{{ team.nombre }} ({{ team.tag }})</mat-option>
+              }
+            </mat-select>
+            @if (form.controls.equipoBId.touched && form.controls.equipoBId.hasError('required')) {
+              <mat-error>Selecciona el equipo B.</mat-error>
+            }
+          </mat-form-field>
+
+          @if (form.errors?.['sameTeams'] && form.controls.equipoBId.touched) {
+            <p class="inline-error full-row">Los dos equipos deben ser distintos.</p>
+          }
+
+          <mat-form-field appearance="outline">
+            <mat-label>Marcador A</mat-label>
+            <input matInput type="number" min="0" formControlName="marcadorA" />
+            @if (form.controls.marcadorA.touched && form.controls.marcadorA.hasError('required')) {
+              <mat-error>Requerido.</mat-error>
+            } @else if (form.controls.marcadorA.touched && form.controls.marcadorA.hasError('min')) {
+              <mat-error>Debe ser 0 o mayor.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Marcador B</mat-label>
+            <input matInput type="number" min="0" formControlName="marcadorB" />
+            @if (form.controls.marcadorB.touched && form.controls.marcadorB.hasError('required')) {
+              <mat-error>Requerido.</mat-error>
+            } @else if (form.controls.marcadorB.touched && form.controls.marcadorB.hasError('min')) {
+              <mat-error>Debe ser 0 o mayor.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha y hora</mat-label>
+            <input matInput type="datetime-local" formControlName="fecha" />
+            @if (form.controls.fecha.touched && form.controls.fecha.hasError('required')) {
+              <mat-error>Selecciona fecha y hora.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Estado</mat-label>
+            <mat-select formControlName="estado">
+              @for (status of statuses; track status.value) {
+                <mat-option [value]="status.value">{{ status.label }}</mat-option>
+              }
+            </mat-select>
+            @if (form.controls.estado.touched && form.controls.estado.hasError('required')) {
+              <mat-error>Selecciona el estado.</mat-error>
+            }
+          </mat-form-field>
+        </form>
+      </mat-card-content>
+
+      <mat-card-actions align="end">
+        <button mat-stroked-button type="button" (click)="resetForm()">
+          {{ isEditing ? 'Cancelar' : 'Limpiar' }}
+        </button>
+        <button
+          mat-flat-button
+          form="match-form"
+          type="submit"
+          [disabled]="saving || availableTeams.length < 2"
+        >
+          {{ saving ? 'Guardando...' : (isEditing ? 'Actualizar' : 'Crear') }}
+        </button>
+      </mat-card-actions>
+
+      @if (!loadingTournaments && tournaments.length === 0) {
+        <p class="helper-message">Primero crea al menos un torneo para registrar partidos.</p>
+      } @else if (form.controls.torneoId.value && availableTeams.length < 2) {
+        <p class="helper-message">Este torneo necesita al menos dos equipos registrados.</p>
+      }
+    </mat-card>
+
+    <mat-card class="table-card">
+      <mat-card-header>
+        <mat-card-title>Partidos registrados</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        @if (loading) {
+          <p class="state-message">Cargando partidos...</p>
+        } @else if (matches.length === 0) {
+          <p class="state-message">Todavia no hay partidos registrados.</p>
+        } @else {
+          <div class="table-wrap">
+            <table mat-table [dataSource]="matches">
+              <ng-container matColumnDef="torneo">
+                <th mat-header-cell *matHeaderCellDef>Torneo</th>
+                <td mat-cell *matCellDef="let match">{{ tournamentName(match.torneoId) }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="equipoA">
+                <th mat-header-cell *matHeaderCellDef>Equipo A</th>
+                <td mat-cell *matCellDef="let match">{{ teamLabel(match.equipoAId) }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="marcador">
+                <th mat-header-cell *matHeaderCellDef>Marcador</th>
+                <td mat-cell *matCellDef="let match">
+                  <span class="score">{{ match.marcadorA }} - {{ match.marcadorB }}</span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="equipoB">
+                <th mat-header-cell *matHeaderCellDef>Equipo B</th>
+                <td mat-cell *matCellDef="let match">{{ teamLabel(match.equipoBId) }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="fecha">
+                <th mat-header-cell *matHeaderCellDef>Fecha</th>
+                <td mat-cell *matCellDef="let match">{{ formatDate(match.fecha) }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="estado">
+                <th mat-header-cell *matHeaderCellDef>Estado</th>
+                <td mat-cell *matCellDef="let match">
+                  <span class="status-pill" [class.status-finalizado]="match.estado === 'finalizado'">
+                    {{ statusLabel(match.estado) }}
+                  </span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="acciones">
+                <th mat-header-cell *matHeaderCellDef>Acciones</th>
+                <td mat-cell *matCellDef="let match">
+                  <div class="row-actions">
+                    <button mat-stroked-button type="button" (click)="editMatch(match)">
+                      Editar
+                    </button>
+                    <button mat-stroked-button color="warn" type="button" (click)="confirmDelete(match)">
+                      Eliminar
+                    </button>
+                  </div>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            </table>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+  </section>
+</main>
