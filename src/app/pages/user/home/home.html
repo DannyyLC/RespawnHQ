@@ -1,6 +1,89 @@
 <app-navbar />
 
-<main class="placeholder-page">
-  <h1>Inicio</h1>
-  <p>Vista informativa pendiente.</p>
+<main class="home-page">
+  <section class="page-header">
+    <div>
+      <p class="eyebrow">RespawnHQ</p>
+      <h1>Inicio</h1>
+    </div>
+  </section>
+
+  @if (loadingTournaments) {
+    <p class="state-message">Cargando torneos...</p>
+  } @else if (!featuredTournament) {
+    <mat-card class="empty-card">
+      <mat-card-content>
+        <p>Todavia no hay torneos publicados.</p>
+      </mat-card-content>
+    </mat-card>
+  } @else {
+    <section class="featured-section">
+      <mat-card class="featured-card">
+        <img mat-card-image [src]="featuredTournament.imagenUrl" [alt]="featuredTournament.nombre" />
+        <mat-card-content>
+          <mat-chip class="status-chip" [class]="featuredTournament.estado">
+            {{ statusLabel(featuredTournament.estado) }}
+          </mat-chip>
+          <h2>{{ featuredTournament.nombre }}</h2>
+          <p class="game">{{ featuredTournament.juego }}</p>
+          <p>{{ featuredTournament.descripcion }}</p>
+          <div class="meta-grid">
+            <span>Inicio: {{ formatDate(featuredTournament.fechaInicio) }}</span>
+            <span>Fin: {{ formatDate(featuredTournament.fechaFin) }}</span>
+            <span>Premio: {{ featuredTournament.premio }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </section>
+
+    <section class="section-block">
+      <h2>Torneos</h2>
+      @if (otherTournaments.length === 0) {
+        <p class="state-message">No hay mas torneos por mostrar.</p>
+      } @else {
+        <div class="cards-grid">
+          @for (tournament of otherTournaments; track tournament.id) {
+            <mat-card class="tournament-card">
+              <img mat-card-image [src]="tournament.imagenUrl" [alt]="tournament.nombre" />
+              <mat-card-content>
+                <div class="card-title-row">
+                  <h3>{{ tournament.nombre }}</h3>
+                  <span class="status-pill" [class]="tournament.estado">
+                    {{ statusLabel(tournament.estado) }}
+                  </span>
+                </div>
+                <p class="game">{{ tournament.juego }}</p>
+                <p class="description">{{ tournament.descripcion }}</p>
+                <p class="dates">
+                  {{ formatDate(tournament.fechaInicio) }} - {{ formatDate(tournament.fechaFin) }}
+                </p>
+              </mat-card-content>
+            </mat-card>
+          }
+        </div>
+      }
+    </section>
+  }
+
+  <section class="section-block news-section">
+    <h2>Noticias destacadas</h2>
+    @if (loadingNews) {
+      <p class="state-message">Cargando noticias...</p>
+    } @else if (news.length === 0) {
+      <p class="state-message">Todavia no hay noticias publicadas.</p>
+    } @else {
+      <div class="news-grid">
+        @for (item of news; track item.id) {
+          <mat-card class="news-card">
+            <img mat-card-image [src]="item.imagenUrl" [alt]="item.titulo" />
+            <mat-card-content>
+              <h3>{{ item.titulo }}</h3>
+              <p class="news-meta">{{ item.autor }} · {{ formatDate(item.fecha) }}</p>
+              <p>{{ item.contenido }}</p>
+            </mat-card-content>
+          </mat-card>
+        }
+      </div>
+    }
+  </section>
 </main>

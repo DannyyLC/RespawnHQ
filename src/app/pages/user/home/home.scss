@@ -1,0 +1,179 @@
+.home-page {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.page-header {
+  margin-bottom: 1.5rem;
+
+  h1 {
+    margin: 0;
+    font-size: 2rem;
+    line-height: 1.1;
+  }
+}
+
+.eyebrow {
+  margin: 0 0 0.25rem;
+  color: var(--mat-sys-primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.featured-section,
+.section-block {
+  margin-bottom: 2rem;
+}
+
+.section-block h2 {
+  margin: 0 0 1rem;
+}
+
+.news-section {
+  margin-top: 3rem;
+}
+
+.featured-card {
+  display: grid;
+  grid-template-columns: minmax(280px, 45%) 1fr;
+  overflow: hidden;
+  border-radius: 8px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    min-height: 320px;
+    object-fit: cover;
+  }
+
+  mat-card-content {
+    padding: 1.5rem;
+  }
+
+  h2 {
+    margin: 1rem 0 0.25rem;
+    font-size: 2rem;
+  }
+}
+
+.game {
+  margin: 0 0 0.75rem;
+  color: var(--mat-sys-primary);
+  font-weight: 700;
+}
+
+.meta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+
+  span {
+    padding: 0.75rem;
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--mat-sys-primary) 10%, transparent);
+    font-weight: 700;
+  }
+}
+
+.cards-grid,
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.tournament-card,
+.news-card,
+.empty-card {
+  border-radius: 8px;
+}
+
+.tournament-card,
+.news-card {
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+}
+
+.card-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+
+  h3 {
+    margin: 0;
+  }
+}
+
+.description {
+  display: -webkit-box;
+  min-height: 3.2rem;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.dates,
+.news-meta,
+.state-message {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.status-pill,
+.status-chip {
+  white-space: nowrap;
+
+  &.proximo {
+    background: rgba(33, 150, 243, 0.14);
+    color: #1565c0;
+  }
+
+  &.en_curso {
+    background: rgba(76, 175, 80, 0.16);
+    color: #2e7d32;
+  }
+
+  &.finalizado {
+    background: rgba(117, 117, 117, 0.18);
+    color: #424242;
+  }
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 0.65rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+@media (max-width: 820px) {
+  .featured-card {
+    grid-template-columns: 1fr;
+
+    img {
+      min-height: 220px;
+    }
+  }
+
+  .meta-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .home-page {
+    padding: 1rem;
+  }
+}
