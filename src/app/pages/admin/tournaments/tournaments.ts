@@ -129,10 +129,10 @@ export class Tournaments {
     try {
       if (this.editingId) {
         await this.tournamentService.update(this.editingId, tournament);
-        this.snackBar.open('Torneo actualizado.', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Torneo actualizado exitosamente.', 'Cerrar', { duration: 3000 });
       } else {
         await this.tournamentService.create(tournament);
-        this.snackBar.open('Torneo creado.', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Torneo creado exitosamente.', 'Cerrar', { duration: 3000 });
       }
       this.resetForm();
     } catch (error) {
@@ -172,7 +172,7 @@ export class Tournaments {
         if (this.editingId === tournament.id) {
           this.resetForm();
         }
-        this.snackBar.open('Torneo eliminado.', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Torneo eliminado exitosamente.', 'Cerrar', { duration: 3000 });
       } catch (error) {
         console.error('[RespawnHQ Tournaments] Error eliminando torneo:', error);
         this.snackBar.open('No se pudo eliminar el torneo.', 'Cerrar', { duration: 4000 });
