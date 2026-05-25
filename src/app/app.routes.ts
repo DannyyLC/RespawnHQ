@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth-guard';
 import { adminGuard } from './guards/admin-guard';
+import { publicGuard } from './guards/public-guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -8,10 +9,12 @@ export const routes: Routes = [
   {
     path: 'login',
     loadComponent: () => import('./pages/login/login').then(m => m.Login),
+    canActivate: [publicGuard],
   },
   {
     path: 'register',
     loadComponent: () => import('./pages/register/register').then(m => m.Register),
+    canActivate: [publicGuard],
   },
   {
     path: 'dashboard',
