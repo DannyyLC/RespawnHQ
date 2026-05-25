@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -17,6 +17,9 @@ import { User } from '../models/user.model';
 export class AuthService {
   currentUser$: Observable<FirebaseUser | null>;
 
+  private userProfileSignal = signal<User | null>(null);
+  readonly userProfile = this.userProfileSignal.asReadonly();
+
   constructor() {
     this.currentUser$ = new Observable(observer => {
       return onAuthStateChanged(auth, user => {
@@ -27,6 +30,29 @@ export class AuthService {
         });
         observer.next(user);
       });
+    });
+
+    onAuthStateChanged(auth, async user => {
+      if (!user) {
+        this.userProfileSignal.set(null);
+        return;
+      }
+      try {
+        const snap = await getDoc(doc(db, 'users', user.uid));
+        if (snap.exists()) {
+          this.userProfileSignal.set({ id: snap.id, ...snap.data() } as User);
+        } else {
+          this.userProfileSignal.set({
+            id: user.uid,
+            nombre: user.displayName || user.email || '',
+            correo: user.email || '',
+            rol: 'user',
+            fechaRegistro: new Date(),
+          });
+        }
+      } catch (error) {
+        console.error('[RespawnHQ Auth] Error cacheando perfil:', error);
+      }
     });
   }
 

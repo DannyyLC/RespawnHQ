@@ -6,7 +6,7 @@
     <a mat-button routerLink="/standings" routerLinkActive="active-link">Posiciones</a>
     <a mat-button routerLink="/schedule" routerLinkActive="active-link">Calendario</a>
 
-    @if (isAdmin) {
+    @if (isAdmin()) {
       <a mat-button routerLink="/admin/tournaments" routerLinkActive="active-link">Torneos</a>
       <a mat-button routerLink="/admin/teams" routerLinkActive="active-link">Equipos</a>
       <a mat-button routerLink="/admin/players" routerLinkActive="active-link">Jugadores</a>
@@ -16,8 +16,8 @@
 
   <span class="spacer"></span>
 
-  @if (userData) {
-    <span class="user-name">{{ userData.nombre }}</span>
+  @if (userData(); as user) {
+    <span class="user-name">{{ user.nombre }}</span>
   }
 
   <button mat-stroked-button type="button" (click)="confirmLogout()">Cerrar sesion</button>
