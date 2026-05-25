@@ -1,0 +1,25 @@
+<mat-toolbar class="app-navbar">
+  <a class="brand" routerLink="/dashboard">RespawnHQ</a>
+
+  <nav class="nav-links" aria-label="Navegacion principal">
+    <a mat-button routerLink="/dashboard" routerLinkActive="active-link">Dashboard</a>
+
+    @if (isAdmin) {
+      <a mat-button routerLink="/admin/tournaments" routerLinkActive="active-link">Torneos</a>
+      <a mat-button routerLink="/admin/teams" routerLinkActive="active-link">Equipos</a>
+      <a mat-button routerLink="/admin/players" routerLinkActive="active-link">Jugadores</a>
+    } @else {
+      <a mat-button routerLink="/home" routerLinkActive="active-link">Inicio</a>
+      <a mat-button routerLink="/standings" routerLinkActive="active-link">Posiciones</a>
+      <a mat-button routerLink="/schedule" routerLinkActive="active-link">Calendario</a>
+    }
+  </nav>
+
+  <span class="spacer"></span>
+
+  @if (userData) {
+    <span class="user-name">{{ userData.nombre }}</span>
+  }
+
+  <button mat-stroked-button type="button" (click)="logout()">Cerrar sesion</button>
+</mat-toolbar>

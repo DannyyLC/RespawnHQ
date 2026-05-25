@@ -1,11 +1,4 @@
-<mat-toolbar class="dashboard-toolbar">
-  <span class="brand">RespawnHQ</span>
-  <span class="spacer"></span>
-  @if (userData) {
-    <span class="user-name">{{ userData.nombre }}</span>
-  }
-  <button mat-stroked-button (click)="logout()">Cerrar sesión</button>
-</mat-toolbar>
+<app-navbar />
 
 <div class="dashboard-content">
   @if (loading) {

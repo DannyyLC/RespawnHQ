@@ -2,9 +2,9 @@ import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatToolbarModule } from '@angular/material/toolbar';
 import { AuthService } from '../../services/auth';
 import { User } from '../../models/user.model';
+import { Navbar } from '../../components/navbar/navbar';
 
 const DASHBOARD_TIMEOUT_MS = 8000;
 const ADMIN_EMAIL = 'admin@respawnhq.com';
@@ -22,9 +22,9 @@ function withTimeout<T>(promise: Promise<T>): Promise<T> {
   selector: 'app-dashboard',
   imports: [
     RouterLink,
+    Navbar,
     MatButtonModule,
     MatCardModule,
-    MatToolbarModule,
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',

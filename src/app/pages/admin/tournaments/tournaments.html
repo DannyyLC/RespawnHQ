@@ -1,1 +1,176 @@
-<p>tournaments works!</p>
+<app-navbar />
+
+<main class="tournaments-page">
+  <section class="page-header">
+    <div>
+      <p class="eyebrow">Admin</p>
+      <h1>Torneos</h1>
+    </div>
+  </section>
+
+  <section class="content-grid">
+    <mat-card class="form-card">
+      <mat-card-header>
+        <mat-card-title>{{ isEditing ? 'Editar torneo' : 'Crear torneo' }}</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <form [formGroup]="form" id="tournament-form" class="tournament-form" (ngSubmit)="onSubmit()">
+          <mat-form-field appearance="outline">
+            <mat-label>Nombre</mat-label>
+            <input matInput formControlName="nombre" />
+            @if (form.controls.nombre.touched && form.controls.nombre.hasError('required')) {
+              <mat-error>El nombre es requerido.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Juego</mat-label>
+            <input matInput formControlName="juego" />
+            @if (form.controls.juego.touched && form.controls.juego.hasError('required')) {
+              <mat-error>El juego es requerido.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-row">
+            <mat-label>Descripcion</mat-label>
+            <textarea matInput rows="3" formControlName="descripcion"></textarea>
+            @if (form.controls.descripcion.touched && form.controls.descripcion.hasError('required')) {
+              <mat-error>La descripcion es requerida.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha inicio</mat-label>
+            <input matInput [matDatepicker]="startPicker" formControlName="fechaInicio" />
+            <mat-datepicker-toggle matIconSuffix [for]="startPicker" />
+            <mat-datepicker #startPicker />
+            @if (form.controls.fechaInicio.touched && form.controls.fechaInicio.hasError('required')) {
+              <mat-error>La fecha de inicio es requerida.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha fin</mat-label>
+            <input matInput [matDatepicker]="endPicker" formControlName="fechaFin" />
+            <mat-datepicker-toggle matIconSuffix [for]="endPicker" />
+            <mat-datepicker #endPicker />
+            @if (form.controls.fechaFin.touched && form.controls.fechaFin.hasError('required')) {
+              <mat-error>La fecha de fin es requerida.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Estado</mat-label>
+            <mat-select formControlName="estado">
+              @for (status of statuses; track status.value) {
+                <mat-option [value]="status.value">{{ status.label }}</mat-option>
+              }
+            </mat-select>
+            @if (form.controls.estado.touched && form.controls.estado.hasError('required')) {
+              <mat-error>El estado es requerido.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Premio</mat-label>
+            <input matInput formControlName="premio" placeholder="$10,000 MXN" />
+            @if (form.controls.premio.touched && form.controls.premio.hasError('required')) {
+              <mat-error>El premio es requerido.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-row">
+            <mat-label>Imagen URL</mat-label>
+            <input matInput formControlName="imagenUrl" />
+            @if (form.controls.imagenUrl.touched && form.controls.imagenUrl.hasError('required')) {
+              <mat-error>La imagen es requerida.</mat-error>
+            } @else if (form.controls.imagenUrl.touched && form.controls.imagenUrl.hasError('pattern')) {
+              <mat-error>Usa una URL valida que inicie con http o https.</mat-error>
+            }
+          </mat-form-field>
+        </form>
+      </mat-card-content>
+
+      <mat-card-actions align="end">
+        <button mat-stroked-button type="button" (click)="resetForm()">
+          {{ isEditing ? 'Cancelar' : 'Limpiar' }}
+        </button>
+        <button mat-flat-button form="tournament-form" type="submit" [disabled]="saving">
+          {{ saving ? 'Guardando...' : (isEditing ? 'Actualizar' : 'Crear') }}
+        </button>
+      </mat-card-actions>
+    </mat-card>
+
+    <mat-card class="table-card">
+      <mat-card-header>
+        <mat-card-title>Torneos registrados</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        @if (loading) {
+          <p class="state-message">Cargando torneos...</p>
+        } @else if (tournaments.length === 0) {
+          <p class="state-message">Todavia no hay torneos registrados.</p>
+        } @else {
+          <div class="table-wrap">
+            <table mat-table [dataSource]="tournaments">
+              <ng-container matColumnDef="nombre">
+                <th mat-header-cell *matHeaderCellDef>Nombre</th>
+                <td mat-cell *matCellDef="let tournament">
+                  <span class="name-cell">{{ tournament.nombre }}</span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="juego">
+                <th mat-header-cell *matHeaderCellDef>Juego</th>
+                <td mat-cell *matCellDef="let tournament">{{ tournament.juego }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="estado">
+                <th mat-header-cell *matHeaderCellDef>Estado</th>
+                <td mat-cell *matCellDef="let tournament">
+                  <span class="status-pill" [class]="tournament.estado">
+                    {{ statusLabel(tournament.estado) }}
+                  </span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="fechaInicio">
+                <th mat-header-cell *matHeaderCellDef>Inicio</th>
+                <td mat-cell *matCellDef="let tournament">{{ formatDate(tournament.fechaInicio) }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="fechaFin">
+                <th mat-header-cell *matHeaderCellDef>Fin</th>
+                <td mat-cell *matCellDef="let tournament">{{ formatDate(tournament.fechaFin) }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="premio">
+                <th mat-header-cell *matHeaderCellDef>Premio</th>
+                <td mat-cell *matCellDef="let tournament">{{ tournament.premio }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="acciones">
+                <th mat-header-cell *matHeaderCellDef>Acciones</th>
+                <td mat-cell *matCellDef="let tournament">
+                  <div class="row-actions">
+                    <button mat-stroked-button type="button" (click)="editTournament(tournament)">
+                      Editar
+                    </button>
+                    <button mat-stroked-button color="warn" type="button" (click)="confirmDelete(tournament)">
+                      Eliminar
+                    </button>
+                  </div>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            </table>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+  </section>
+</main>
