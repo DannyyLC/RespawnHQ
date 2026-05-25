@@ -1,6 +1,146 @@
 <app-navbar />
 
-<main class="placeholder-page">
-  <h1>Jugadores</h1>
-  <p>CRUD de jugadores pendiente.</p>
+<main class="players-page">
+  <section class="page-header">
+    <div>
+      <p class="eyebrow">Admin</p>
+      <h1>Jugadores</h1>
+    </div>
+  </section>
+
+  <section class="content-grid">
+    <mat-card class="form-card">
+      <mat-card-header>
+        <mat-card-title>{{ isEditing ? 'Editar jugador' : 'Crear jugador' }}</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <form [formGroup]="form" id="player-form" class="player-form" (ngSubmit)="onSubmit()">
+          <mat-form-field appearance="outline">
+            <mat-label>Alias</mat-label>
+            <input matInput formControlName="alias" />
+            @if (form.controls.alias.touched && form.controls.alias.hasError('required')) {
+              <mat-error>El alias es requerido.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Nombre real</mat-label>
+            <input matInput formControlName="nombreReal" />
+            @if (form.controls.nombreReal.touched && form.controls.nombreReal.hasError('required')) {
+              <mat-error>El nombre real es requerido.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-row">
+            <mat-label>Equipo</mat-label>
+            <mat-select formControlName="equipoId">
+              @for (team of teams; track team.id) {
+                <mat-option [value]="team.id">{{ team.nombre }} ({{ team.tag }})</mat-option>
+              }
+            </mat-select>
+            @if (form.controls.equipoId.touched && form.controls.equipoId.hasError('required')) {
+              <mat-error>Selecciona un equipo.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Rol en juego</mat-label>
+            <input matInput formControlName="rolJuego" placeholder="Duelista, soporte, capitán..." />
+            @if (form.controls.rolJuego.touched && form.controls.rolJuego.hasError('required')) {
+              <mat-error>El rol es requerido.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Pais</mat-label>
+            <input matInput formControlName="pais" />
+            @if (form.controls.pais.touched && form.controls.pais.hasError('required')) {
+              <mat-error>El pais es requerido.</mat-error>
+            }
+          </mat-form-field>
+        </form>
+      </mat-card-content>
+
+      <mat-card-actions align="end">
+        <button mat-stroked-button type="button" (click)="resetForm()">
+          {{ isEditing ? 'Cancelar' : 'Limpiar' }}
+        </button>
+        <button
+          mat-flat-button
+          form="player-form"
+          type="submit"
+          [disabled]="saving || teams.length === 0"
+        >
+          {{ saving ? 'Guardando...' : (isEditing ? 'Actualizar' : 'Crear') }}
+        </button>
+      </mat-card-actions>
+
+      @if (!loadingTeams && teams.length === 0) {
+        <p class="helper-message">Primero crea al menos un equipo para registrar jugadores.</p>
+      }
+    </mat-card>
+
+    <mat-card class="table-card">
+      <mat-card-header>
+        <mat-card-title>Jugadores registrados</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        @if (loading) {
+          <p class="state-message">Cargando jugadores...</p>
+        } @else if (players.length === 0) {
+          <p class="state-message">Todavia no hay jugadores registrados.</p>
+        } @else {
+          <div class="table-wrap">
+            <table mat-table [dataSource]="players">
+              <ng-container matColumnDef="alias">
+                <th mat-header-cell *matHeaderCellDef>Alias</th>
+                <td mat-cell *matCellDef="let player">
+                  <span class="alias-cell">{{ player.alias }}</span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="nombreReal">
+                <th mat-header-cell *matHeaderCellDef>Nombre real</th>
+                <td mat-cell *matCellDef="let player">{{ player.nombreReal }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="equipo">
+                <th mat-header-cell *matHeaderCellDef>Equipo</th>
+                <td mat-cell *matCellDef="let player">{{ teamName(player.equipoId) }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="rolJuego">
+                <th mat-header-cell *matHeaderCellDef>Rol</th>
+                <td mat-cell *matCellDef="let player">{{ player.rolJuego }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="pais">
+                <th mat-header-cell *matHeaderCellDef>Pais</th>
+                <td mat-cell *matCellDef="let player">{{ player.pais }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="acciones">
+                <th mat-header-cell *matHeaderCellDef>Acciones</th>
+                <td mat-cell *matCellDef="let player">
+                  <div class="row-actions">
+                    <button mat-stroked-button type="button" (click)="editPlayer(player)">
+                      Editar
+                    </button>
+                    <button mat-stroked-button color="warn" type="button" (click)="confirmDelete(player)">
+                      Eliminar
+                    </button>
+                  </div>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            </table>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+  </section>
 </main>
