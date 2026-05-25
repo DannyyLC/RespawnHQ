@@ -1,6 +1,154 @@
 <app-navbar />
 
-<main class="placeholder-page">
-  <h1>Equipos</h1>
-  <p>CRUD de equipos pendiente.</p>
+<main class="teams-page">
+  <section class="page-header">
+    <div>
+      <p class="eyebrow">Admin</p>
+      <h1>Equipos</h1>
+    </div>
+  </section>
+
+  <section class="content-grid">
+    <mat-card class="form-card">
+      <mat-card-header>
+        <mat-card-title>{{ isEditing ? 'Editar equipo' : 'Crear equipo' }}</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <form [formGroup]="form" id="team-form" class="team-form" (ngSubmit)="onSubmit()">
+          <mat-form-field appearance="outline">
+            <mat-label>Nombre</mat-label>
+            <input matInput formControlName="nombre" />
+            @if (form.controls.nombre.touched && form.controls.nombre.hasError('required')) {
+              <mat-error>El nombre es requerido.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Tag</mat-label>
+            <input matInput formControlName="tag" maxlength="8" />
+            @if (form.controls.tag.touched && form.controls.tag.hasError('required')) {
+              <mat-error>El tag es requerido.</mat-error>
+            } @else if (form.controls.tag.touched && form.controls.tag.hasError('maxlength')) {
+              <mat-error>Maximo 8 caracteres.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-row">
+            <mat-label>Torneo</mat-label>
+            <mat-select formControlName="torneoId">
+              @for (tournament of tournaments; track tournament.id) {
+                <mat-option [value]="tournament.id">{{ tournament.nombre }}</mat-option>
+              }
+            </mat-select>
+            @if (form.controls.torneoId.touched && form.controls.torneoId.hasError('required')) {
+              <mat-error>Selecciona un torneo.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Region</mat-label>
+            <input matInput formControlName="region" placeholder="LATAM" />
+            @if (form.controls.region.touched && form.controls.region.hasError('required')) {
+              <mat-error>La region es requerida.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Logo URL</mat-label>
+            <input matInput formControlName="logoUrl" />
+            @if (form.controls.logoUrl.touched && form.controls.logoUrl.hasError('required')) {
+              <mat-error>El logo es requerido.</mat-error>
+            } @else if (form.controls.logoUrl.touched && form.controls.logoUrl.hasError('pattern')) {
+              <mat-error>Usa una URL valida que inicie con http o https.</mat-error>
+            }
+          </mat-form-field>
+        </form>
+      </mat-card-content>
+
+      <mat-card-actions align="end">
+        <button mat-stroked-button type="button" (click)="resetForm()">
+          {{ isEditing ? 'Cancelar' : 'Limpiar' }}
+        </button>
+        <button
+          mat-flat-button
+          form="team-form"
+          type="submit"
+          [disabled]="saving || tournaments.length === 0"
+        >
+          {{ saving ? 'Guardando...' : (isEditing ? 'Actualizar' : 'Crear') }}
+        </button>
+      </mat-card-actions>
+
+      @if (!loadingTournaments && tournaments.length === 0) {
+        <p class="helper-message">Primero crea al menos un torneo para registrar equipos.</p>
+      }
+    </mat-card>
+
+    <mat-card class="table-card">
+      <mat-card-header>
+        <mat-card-title>Equipos registrados</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        @if (loading) {
+          <p class="state-message">Cargando equipos...</p>
+        } @else if (teams.length === 0) {
+          <p class="state-message">Todavia no hay equipos registrados.</p>
+        } @else {
+          <div class="table-wrap">
+            <table mat-table [dataSource]="teams">
+              <ng-container matColumnDef="nombre">
+                <th mat-header-cell *matHeaderCellDef>Nombre</th>
+                <td mat-cell *matCellDef="let team">
+                  <span class="team-name">{{ team.nombre }}</span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="tag">
+                <th mat-header-cell *matHeaderCellDef>Tag</th>
+                <td mat-cell *matCellDef="let team">
+                  <span class="tag-pill">{{ team.tag }}</span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="torneo">
+                <th mat-header-cell *matHeaderCellDef>Torneo</th>
+                <td mat-cell *matCellDef="let team">{{ tournamentName(team.torneoId) }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="region">
+                <th mat-header-cell *matHeaderCellDef>Region</th>
+                <td mat-cell *matCellDef="let team">{{ team.region }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="logoUrl">
+                <th mat-header-cell *matHeaderCellDef>Logo</th>
+                <td mat-cell *matCellDef="let team">
+                  <a [href]="team.logoUrl" target="_blank" rel="noreferrer">Ver logo</a>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="acciones">
+                <th mat-header-cell *matHeaderCellDef>Acciones</th>
+                <td mat-cell *matCellDef="let team">
+                  <div class="row-actions">
+                    <button mat-stroked-button type="button" (click)="editTeam(team)">
+                      Editar
+                    </button>
+                    <button mat-stroked-button color="warn" type="button" (click)="confirmDelete(team)">
+                      Eliminar
+                    </button>
+                  </div>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            </table>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+  </section>
 </main>
