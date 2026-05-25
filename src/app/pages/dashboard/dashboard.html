@@ -1,1 +1,98 @@
-<p>dashboard works!</p>
+<mat-toolbar class="dashboard-toolbar">
+  <span class="brand">RespawnHQ</span>
+  <span class="spacer"></span>
+  @if (userData) {
+    <span class="user-name">{{ userData.nombre }}</span>
+  }
+  <button mat-stroked-button (click)="logout()">Cerrar sesión</button>
+</mat-toolbar>
+
+<div class="dashboard-content">
+  @if (loading) {
+    <div class="spinner-center">
+      <mat-spinner />
+    </div>
+  } @else if (userData) {
+    @if (userData.rol === 'admin') {
+      <!-- Panel de Administrador -->
+      <h2 class="section-title">Panel de Administrador</h2>
+      <div class="cards-grid">
+        <mat-card class="nav-card" routerLink="/admin/tournaments">
+          <mat-card-header>
+            <mat-card-title>Torneos</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Gestiona los torneos de la plataforma.</p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-flat-button routerLink="/admin/tournaments">Ir a Torneos</button>
+          </mat-card-actions>
+        </mat-card>
+
+        <mat-card class="nav-card" routerLink="/admin/teams">
+          <mat-card-header>
+            <mat-card-title>Equipos</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Administra los equipos participantes.</p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-flat-button routerLink="/admin/teams">Ir a Equipos</button>
+          </mat-card-actions>
+        </mat-card>
+
+        <mat-card class="nav-card" routerLink="/admin/players">
+          <mat-card-header>
+            <mat-card-title>Jugadores</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Gestiona los jugadores registrados.</p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-flat-button routerLink="/admin/players">Ir a Jugadores</button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    } @else {
+      <!-- Panel de Usuario normal -->
+      <h2 class="section-title">Bienvenido, {{ userData.nombre }}</h2>
+      <div class="cards-grid">
+        <mat-card class="nav-card">
+          <mat-card-header>
+            <mat-card-title>Inicio</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Torneos activos y noticias destacadas.</p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-flat-button routerLink="/home">Ver Inicio</button>
+          </mat-card-actions>
+        </mat-card>
+
+        <mat-card class="nav-card">
+          <mat-card-header>
+            <mat-card-title>Posiciones</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Tabla de posiciones por torneo.</p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-flat-button routerLink="/standings">Ver Posiciones</button>
+          </mat-card-actions>
+        </mat-card>
+
+        <mat-card class="nav-card">
+          <mat-card-header>
+            <mat-card-title>Calendario</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Próximos partidos y resultados.</p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-flat-button routerLink="/schedule">Ver Calendario</button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    }
+  }
+</div>

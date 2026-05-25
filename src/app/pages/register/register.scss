@@ -1,0 +1,55 @@
+.auth-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1rem;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+
+  mat-card-header {
+    margin-bottom: 1rem;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+}
+
+.brand-title {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.submit-btn {
+  margin-top: 0.5rem;
+  height: 44px;
+  font-size: 1rem;
+}
+
+.actions-center {
+  justify-content: center;
+}
+
+.switch-link {
+  margin: 0;
+  font-size: 0.875rem;
+
+  a {
+    color: var(--mat-sys-primary);
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

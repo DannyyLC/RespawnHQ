@@ -1,1 +1,90 @@
-<p>register works!</p>
+<div class="auth-container">
+  <mat-card class="auth-card">
+    <mat-card-header>
+      <mat-card-title class="brand-title">RespawnHQ</mat-card-title>
+      <mat-card-subtitle>Crea tu cuenta</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+        <!-- Nombre -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nombre completo</mat-label>
+          <input matInput formControlName="nombre" type="text" autocomplete="name" />
+          @if (nombre.invalid && nombre.touched) {
+            <mat-error>El nombre es requerido.</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Correo -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Correo electrónico</mat-label>
+          <input matInput formControlName="correo" type="email" autocomplete="email" />
+          @if (correo.invalid && correo.touched) {
+            @if (correo.errors?.['required']) {
+              <mat-error>El correo es requerido.</mat-error>
+            } @else if (correo.errors?.['email']) {
+              <mat-error>El formato del correo no es válido.</mat-error>
+            }
+          }
+        </mat-form-field>
+
+        <!-- Contraseña con mensajes individuales -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Contraseña</mat-label>
+          <input matInput formControlName="password" type="password" autocomplete="new-password" />
+          @if (password.invalid && password.touched) {
+            @if (password.errors?.['required']) {
+              <mat-error>La contraseña es requerida.</mat-error>
+            } @else if (password.errors?.['minlength'] || password.errors?.['maxlength']) {
+              <mat-error>La contraseña debe tener entre 8 y 20 caracteres.</mat-error>
+            } @else if (password.errors?.['invalidChars']) {
+              <mat-error>Solo se permiten letras, dígitos y guion bajo (_).</mat-error>
+            } @else if (password.errors?.['noUppercase']) {
+              <mat-error>Debe contener al menos una letra mayúscula.</mat-error>
+            } @else if (password.errors?.['noDigit']) {
+              <mat-error>Debe contener al menos un dígito (0–9).</mat-error>
+            }
+          }
+        </mat-form-field>
+
+        <!-- Confirmar contraseña -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Confirmar contraseña</mat-label>
+          <input
+            matInput
+            formControlName="confirmPassword"
+            type="password"
+            autocomplete="new-password"
+            [errorStateMatcher]="confirmMatcher"
+          />
+          @if (confirmPassword.touched || form.touched) {
+            @if (confirmPassword.errors?.['required'] && confirmPassword.touched) {
+              <mat-error>La confirmación de contraseña es requerida.</mat-error>
+            } @else if (form.errors?.['passwordMismatch'] && confirmPassword.touched) {
+              <mat-error>Las contraseñas no coinciden.</mat-error>
+            }
+          }
+        </mat-form-field>
+
+        <button
+          mat-flat-button
+          type="submit"
+          class="full-width submit-btn"
+          [disabled]="loading"
+        >
+          @if (loading) {
+            <mat-spinner diameter="22" />
+          } @else {
+            Crear cuenta
+          }
+        </button>
+      </form>
+    </mat-card-content>
+
+    <mat-card-actions class="actions-center">
+      <p class="switch-link">¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a></p>
+    </mat-card-actions>
+  </mat-card>
+</div>
