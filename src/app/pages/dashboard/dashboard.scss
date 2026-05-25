@@ -46,8 +46,19 @@
   }
 }
 
-.spinner-center {
-  display: flex;
-  justify-content: center;
-  padding: 4rem;
+.loading-message {
+  padding: 4rem 0;
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.status-card {
+  max-width: 560px;
+  margin: 3rem auto 0;
+
+  mat-card-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
 }

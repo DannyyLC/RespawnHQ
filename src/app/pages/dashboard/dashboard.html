@@ -9,8 +9,8 @@
 
 <div class="dashboard-content">
   @if (loading) {
-    <div class="spinner-center">
-      <mat-spinner />
+    <div class="loading-message">
+      Cargando tu panel...
     </div>
   } @else if (userData) {
     @if (userData.rol === 'admin') {
@@ -94,5 +94,18 @@
         </mat-card>
       </div>
     }
+  } @else {
+    <mat-card class="status-card">
+      <mat-card-header>
+        <mat-card-title>No pudimos abrir el dashboard</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>{{ loadError || 'Tu sesión está activa, pero no se pudieron leer tus datos.' }}</p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-flat-button routerLink="/login">Volver al login</button>
+        <button mat-stroked-button type="button" (click)="logout()">Cerrar sesión</button>
+      </mat-card-actions>
+    </mat-card>
   }
 </div>

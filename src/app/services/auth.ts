@@ -19,7 +19,14 @@ export class AuthService {
 
   constructor() {
     this.currentUser$ = new Observable(observer => {
-      return onAuthStateChanged(auth, user => observer.next(user));
+      return onAuthStateChanged(auth, user => {
+        console.info('[RespawnHQ Auth] Estado de sesion:', {
+          loggedIn: !!user,
+          uid: user?.uid ?? null,
+          email: user?.email ?? null,
+        });
+        observer.next(user);
+      });
     });
   }
 
@@ -56,12 +63,40 @@ export class AuthService {
     return signOut(auth);
   }
 
+  getCurrentAuthUser(): FirebaseUser | null {
+    return auth.currentUser;
+  }
+
   async getCurrentUserData(): Promise<User | null> {
     const user = auth.currentUser;
-    if (!user) return null;
-    const snap = await getDoc(doc(db, 'users', user.uid));
-    if (!snap.exists()) return null;
-    return { id: snap.id, ...snap.data() } as User;
+    console.info('[RespawnHQ Auth] Leyendo perfil actual:', {
+      hasAuthUser: !!user,
+      uid: user?.uid ?? null,
+      email: user?.email ?? null,
+    });
+
+    if (!user) {
+      console.warn('[RespawnHQ Auth] No hay usuario autenticado en Firebase Auth.');
+      return null;
+    }
+
+    try {
+      const userDocRef = doc(db, 'users', user.uid);
+      console.info(`[RespawnHQ Firestore] getDoc users/${user.uid}`);
+      const snap = await getDoc(userDocRef);
+
+      if (!snap.exists()) {
+        console.warn(`[RespawnHQ Firestore] No existe el documento users/${user.uid}.`);
+        return null;
+      }
+
+      const userData = { id: snap.id, ...snap.data() } as User;
+      console.info('[RespawnHQ Firestore] Perfil cargado:', userData);
+      return userData;
+    } catch (error) {
+      console.error('[RespawnHQ Firestore] Error leyendo el perfil actual:', error);
+      throw error;
+    }
   }
 
   async isAdmin(): Promise<boolean> {

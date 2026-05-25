@@ -5,9 +5,19 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from '../../services/auth';
+
+const LOGIN_TIMEOUT_MS = 12000;
+
+function withTimeout<T>(promise: Promise<T>, message: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) => {
+      window.setTimeout(() => reject(new Error(message)), LOGIN_TIMEOUT_MS);
+    }),
+  ]);
+}
 
 @Component({
   selector: 'app-login',
@@ -18,7 +28,6 @@ import { AuthService } from '../../services/auth';
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
-    MatProgressSpinnerModule,
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
@@ -43,9 +52,12 @@ export class Login {
     if (this.form.invalid) return;
     this.loading = true;
     try {
-      await this.authService.login(
-        this.form.value.correo as string,
-        this.form.value.password as string
+      await withTimeout(
+        this.authService.login(
+          this.form.value.correo as string,
+          this.form.value.password as string
+        ),
+        'login-timeout'
       );
       this.router.navigate(['/dashboard']);
     } catch (error: any) {
@@ -58,16 +70,21 @@ export class Login {
   async onGoogleLogin(): Promise<void> {
     this.loading = true;
     try {
-      await this.authService.loginWithGoogle();
+      await withTimeout(this.authService.loginWithGoogle(), 'google-login-timeout');
       this.router.navigate(['/dashboard']);
-    } catch {
-      this.snackBar.open('No se pudo iniciar sesión con Google.', 'Cerrar', { duration: 4000 });
+    } catch (error: any) {
+      const message = error.message === 'google-login-timeout'
+        ? 'El inicio con Google tardó demasiado. Intenta de nuevo.'
+        : 'No se pudo iniciar sesión con Google.';
+      this.snackBar.open(message, 'Cerrar', { duration: 4000 });
     } finally {
       this.loading = false;
     }
   }
 
   private getErrorMessage(code: string): string {
+    if (!code) return 'El inicio de sesión tardó demasiado. Intenta de nuevo.';
+
     switch (code) {
       case 'auth/invalid-credential':
       case 'auth/wrong-password':
