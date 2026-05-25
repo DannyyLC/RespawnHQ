@@ -1,6 +1,6 @@
-import { Component, DestroyRef, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, ViewChild, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroupDirective, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
@@ -52,12 +52,15 @@ export class ConfirmPlayerDeleteDialog {
   styleUrl: './players.scss',
 })
 export class Players {
+  @ViewChild(FormGroupDirective) private formDirective?: FormGroupDirective;
+
   private fb = inject(FormBuilder);
   private playerService = inject(PlayerService);
   private teamService = inject(TeamService);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
   private destroyRef = inject(DestroyRef);
+  private cdr = inject(ChangeDetectorRef);
 
   players: Jugador[] = [];
   teams: Equipo[] = [];
@@ -83,10 +86,12 @@ export class Players {
         next: players => {
           this.players = players;
           this.loadingPlayers = false;
+          this.cdr.detectChanges();
         },
         error: error => {
           console.error('[RespawnHQ Players] Error cargando jugadores:', error);
           this.loadingPlayers = false;
+          this.cdr.detectChanges();
           this.snackBar.open('No se pudieron cargar los jugadores.', 'Cerrar', { duration: 4000 });
         },
       });
@@ -98,10 +103,12 @@ export class Players {
         next: teams => {
           this.teams = teams;
           this.loadingTeams = false;
+          this.cdr.detectChanges();
         },
         error: error => {
           console.error('[RespawnHQ Players] Error cargando equipos:', error);
           this.loadingTeams = false;
+          this.cdr.detectChanges();
           this.snackBar.open('No se pudieron cargar los equipos.', 'Cerrar', { duration: 4000 });
         },
       });
@@ -184,13 +191,18 @@ export class Players {
 
   resetForm(): void {
     this.editingId = null;
-    this.form.reset({
+    const defaults = {
       alias: '',
       nombreReal: '',
       equipoId: '',
       rolJuego: '',
       pais: '',
-    });
+    };
+    this.formDirective?.resetForm(defaults);
+    this.form.reset(defaults);
+    this.form.markAsPristine();
+    this.form.markAsUntouched();
+    this.form.updateValueAndValidity();
   }
 
   teamName(equipoId: string): string {

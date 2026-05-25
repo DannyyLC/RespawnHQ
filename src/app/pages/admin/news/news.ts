@@ -1,6 +1,6 @@
-import { Component, DestroyRef, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, ViewChild, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroupDirective, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Timestamp } from 'firebase/firestore';
 import { MatButtonModule } from '@angular/material/button';
 import { provideNativeDateAdapter } from '@angular/material/core';
@@ -53,11 +53,14 @@ export class ConfirmNewsDeleteDialog {
   styleUrl: './news.scss',
 })
 export class News {
+  @ViewChild(FormGroupDirective) private formDirective?: FormGroupDirective;
+
   private fb = inject(FormBuilder);
   private newsService = inject(NewsService);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
   private destroyRef = inject(DestroyRef);
+  private cdr = inject(ChangeDetectorRef);
 
   news: Noticia[] = [];
   displayedColumns = ['titulo', 'autor', 'fecha', 'imagenUrl', 'acciones'];
@@ -83,10 +86,12 @@ export class News {
             .slice()
             .sort((a, b) => this.toDate(b.fecha).getTime() - this.toDate(a.fecha).getTime());
           this.loading = false;
+          this.cdr.detectChanges();
         },
         error: error => {
           console.error('[RespawnHQ News] Error cargando noticias:', error);
           this.loading = false;
+          this.cdr.detectChanges();
           this.snackBar.open('No se pudieron cargar las noticias.', 'Cerrar', { duration: 4000 });
         },
       });
@@ -165,13 +170,18 @@ export class News {
 
   resetForm(): void {
     this.editingId = null;
-    this.form.reset({
+    const defaults = {
       titulo: '',
       contenido: '',
       imagenUrl: '',
       fecha: new Date(),
       autor: '',
-    });
+    };
+    this.formDirective?.resetForm(defaults);
+    this.form.reset(defaults);
+    this.form.markAsPristine();
+    this.form.markAsUntouched();
+    this.form.updateValueAndValidity();
   }
 
   formatDate(value: Timestamp | Date): string {

@@ -1,6 +1,6 @@
-import { Component, DestroyRef, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, ViewChild, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroupDirective, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
@@ -52,12 +52,15 @@ export class ConfirmTeamDeleteDialog {
   styleUrl: './teams.scss',
 })
 export class Teams {
+  @ViewChild(FormGroupDirective) private formDirective?: FormGroupDirective;
+
   private fb = inject(FormBuilder);
   private teamService = inject(TeamService);
   private tournamentService = inject(TournamentService);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
   private destroyRef = inject(DestroyRef);
+  private cdr = inject(ChangeDetectorRef);
 
   teams: Equipo[] = [];
   tournaments: Torneo[] = [];
@@ -83,10 +86,12 @@ export class Teams {
         next: teams => {
           this.teams = teams;
           this.loadingTeams = false;
+          this.cdr.detectChanges();
         },
         error: error => {
           console.error('[RespawnHQ Teams] Error cargando equipos:', error);
           this.loadingTeams = false;
+          this.cdr.detectChanges();
           this.snackBar.open('No se pudieron cargar los equipos.', 'Cerrar', { duration: 4000 });
         },
       });
@@ -98,10 +103,12 @@ export class Teams {
         next: tournaments => {
           this.tournaments = tournaments;
           this.loadingTournaments = false;
+          this.cdr.detectChanges();
         },
         error: error => {
           console.error('[RespawnHQ Teams] Error cargando torneos:', error);
           this.loadingTournaments = false;
+          this.cdr.detectChanges();
           this.snackBar.open('No se pudieron cargar los torneos.', 'Cerrar', { duration: 4000 });
         },
       });
@@ -184,13 +191,18 @@ export class Teams {
 
   resetForm(): void {
     this.editingId = null;
-    this.form.reset({
+    const defaults = {
       nombre: '',
       tag: '',
       torneoId: '',
       region: '',
       logoUrl: '',
-    });
+    };
+    this.formDirective?.resetForm(defaults);
+    this.form.reset(defaults);
+    this.form.markAsPristine();
+    this.form.markAsUntouched();
+    this.form.updateValueAndValidity();
   }
 
   tournamentName(torneoId: string): string {

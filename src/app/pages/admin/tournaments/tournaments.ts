@@ -1,6 +1,6 @@
-import { Component, DestroyRef, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, ViewChild, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroupDirective, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Timestamp } from 'firebase/firestore';
 import { MatButtonModule } from '@angular/material/button';
 import { provideNativeDateAdapter } from '@angular/material/core';
@@ -57,11 +57,14 @@ export class ConfirmDeleteDialog {
   styleUrl: './tournaments.scss',
 })
 export class Tournaments {
+  @ViewChild(FormGroupDirective) private formDirective?: FormGroupDirective;
+
   private fb = inject(FormBuilder);
   private tournamentService = inject(TournamentService);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
   private destroyRef = inject(DestroyRef);
+  private cdr = inject(ChangeDetectorRef);
 
   tournaments: Torneo[] = [];
   displayedColumns = ['nombre', 'juego', 'estado', 'fechaInicio', 'fechaFin', 'premio', 'acciones'];
@@ -94,10 +97,12 @@ export class Tournaments {
         next: tournaments => {
           this.tournaments = tournaments;
           this.loading = false;
+          this.cdr.detectChanges();
         },
         error: error => {
           console.error('[RespawnHQ Tournaments] Error cargando torneos:', error);
           this.loading = false;
+          this.cdr.detectChanges();
           this.snackBar.open('No se pudieron cargar los torneos.', 'Cerrar', { duration: 4000 });
         },
       });
@@ -182,16 +187,21 @@ export class Tournaments {
 
   resetForm(): void {
     this.editingId = null;
-    this.form.reset({
+    const defaults = {
       nombre: '',
       juego: '',
       descripcion: '',
       fechaInicio: null,
       fechaFin: null,
-      estado: 'proximo',
+      estado: 'proximo' as TournamentStatus,
       premio: '',
       imagenUrl: '',
-    });
+    };
+    this.formDirective?.resetForm(defaults);
+    this.form.reset(defaults);
+    this.form.markAsPristine();
+    this.form.markAsUntouched();
+    this.form.updateValueAndValidity();
   }
 
   formatDate(value: Timestamp | Date): string {
