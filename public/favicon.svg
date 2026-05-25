@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="RespawnHQ">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e1b4b"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Hex tile background -->
+  <path d="M32 2 L58 17 L58 47 L32 62 L6 47 L6 17 Z"
+        fill="url(#bg)"
+        stroke="url(#accent)"
+        stroke-width="2.5"
+        stroke-linejoin="round"/>
+
+  <!-- Respawn arc: open circle with arrow head -->
+  <path d="M44 22 A16 16 0 1 0 47 38"
+        fill="none"
+        stroke="url(#accent)"
+        stroke-width="5"
+        stroke-linecap="round"/>
+  <path d="M40 14 L46 22 L37 24 Z"
+        fill="url(#accent)"/>
+
+  <!-- Inner R mark -->
+  <text x="32" y="42"
+        text-anchor="middle"
+        font-family="'Segoe UI', Roboto, system-ui, sans-serif"
+        font-weight="800"
+        font-size="20"
+        fill="#f8fafc">R</text>
+</svg>
