@@ -38,6 +38,12 @@ export const routes: Routes = [
       import('./pages/admin/players/players').then(m => m.Players),
     canActivate: [authGuard, adminGuard],
   },
+  {
+    path: 'admin/news',
+    loadComponent: () =>
+      import('./pages/admin/news/news').then(m => m.News),
+    canActivate: [authGuard, adminGuard],
+  },
 
   // Rutas de usuario normal — requieren solo login
   {

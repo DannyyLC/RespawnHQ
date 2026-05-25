@@ -6,6 +6,7 @@
       <a mat-button routerLink="/admin/tournaments" routerLinkActive="active-link">Torneos</a>
       <a mat-button routerLink="/admin/teams" routerLinkActive="active-link">Equipos</a>
       <a mat-button routerLink="/admin/players" routerLinkActive="active-link">Jugadores</a>
+      <a mat-button routerLink="/admin/news" routerLinkActive="active-link">Noticias</a>
     } @else {
       <a mat-button routerLink="/home" routerLinkActive="active-link">Inicio</a>
       <a mat-button routerLink="/standings" routerLinkActive="active-link">Posiciones</a>
@@ -19,5 +20,5 @@
     <span class="user-name">{{ userData.nombre }}</span>
   }
 
-  <button mat-stroked-button type="button" (click)="logout()">Cerrar sesion</button>
+  <button mat-stroked-button type="button" (click)="confirmLogout()">Cerrar sesion</button>
 </mat-toolbar>

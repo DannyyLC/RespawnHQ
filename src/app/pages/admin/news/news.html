@@ -1,0 +1,134 @@
+<app-navbar />
+
+<main class="news-page">
+  <section class="page-header">
+    <div>
+      <p class="eyebrow">Admin</p>
+      <h1>Noticias</h1>
+    </div>
+  </section>
+
+  <section class="content-grid">
+    <mat-card class="form-card">
+      <mat-card-header>
+        <mat-card-title>{{ isEditing ? 'Editar noticia' : 'Crear noticia' }}</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <form [formGroup]="form" id="news-form" class="news-form" (ngSubmit)="onSubmit()">
+          <mat-form-field appearance="outline" class="full-row">
+            <mat-label>Titulo</mat-label>
+            <input matInput formControlName="titulo" />
+            @if (form.controls.titulo.touched && form.controls.titulo.hasError('required')) {
+              <mat-error>El titulo es requerido.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-row">
+            <mat-label>Contenido</mat-label>
+            <textarea matInput rows="5" formControlName="contenido"></textarea>
+            @if (form.controls.contenido.touched && form.controls.contenido.hasError('required')) {
+              <mat-error>El contenido es requerido.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-row">
+            <mat-label>Imagen URL</mat-label>
+            <input matInput formControlName="imagenUrl" />
+            @if (form.controls.imagenUrl.touched && form.controls.imagenUrl.hasError('required')) {
+              <mat-error>La imagen es requerida.</mat-error>
+            } @else if (form.controls.imagenUrl.touched && form.controls.imagenUrl.hasError('pattern')) {
+              <mat-error>Usa una URL valida que inicie con http o https.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha</mat-label>
+            <input matInput [matDatepicker]="datePicker" formControlName="fecha" />
+            <mat-datepicker-toggle matIconSuffix [for]="datePicker" />
+            <mat-datepicker #datePicker />
+            @if (form.controls.fecha.touched && form.controls.fecha.hasError('required')) {
+              <mat-error>La fecha es requerida.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Autor</mat-label>
+            <input matInput formControlName="autor" />
+            @if (form.controls.autor.touched && form.controls.autor.hasError('required')) {
+              <mat-error>El autor es requerido.</mat-error>
+            }
+          </mat-form-field>
+        </form>
+      </mat-card-content>
+
+      <mat-card-actions align="end">
+        <button mat-stroked-button type="button" (click)="resetForm()">
+          {{ isEditing ? 'Cancelar' : 'Limpiar' }}
+        </button>
+        <button mat-flat-button form="news-form" type="submit" [disabled]="saving">
+          {{ saving ? 'Guardando...' : (isEditing ? 'Actualizar' : 'Crear') }}
+        </button>
+      </mat-card-actions>
+    </mat-card>
+
+    <mat-card class="table-card">
+      <mat-card-header>
+        <mat-card-title>Noticias publicadas</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        @if (loading) {
+          <p class="state-message">Cargando noticias...</p>
+        } @else if (news.length === 0) {
+          <p class="state-message">Todavia no hay noticias publicadas.</p>
+        } @else {
+          <div class="table-wrap">
+            <table mat-table [dataSource]="news">
+              <ng-container matColumnDef="titulo">
+                <th mat-header-cell *matHeaderCellDef>Titulo</th>
+                <td mat-cell *matCellDef="let item">
+                  <span class="title-cell">{{ item.titulo }}</span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="autor">
+                <th mat-header-cell *matHeaderCellDef>Autor</th>
+                <td mat-cell *matCellDef="let item">{{ item.autor }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="fecha">
+                <th mat-header-cell *matHeaderCellDef>Fecha</th>
+                <td mat-cell *matCellDef="let item">{{ formatDate(item.fecha) }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="imagenUrl">
+                <th mat-header-cell *matHeaderCellDef>Imagen</th>
+                <td mat-cell *matCellDef="let item">
+                  <a [href]="item.imagenUrl" target="_blank" rel="noreferrer">Ver imagen</a>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="acciones">
+                <th mat-header-cell *matHeaderCellDef>Acciones</th>
+                <td mat-cell *matCellDef="let item">
+                  <div class="row-actions">
+                    <button mat-stroked-button type="button" (click)="editNews(item)">
+                      Editar
+                    </button>
+                    <button mat-stroked-button color="warn" type="button" (click)="confirmDelete(item)">
+                      Eliminar
+                    </button>
+                  </div>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            </table>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+  </section>
+</main>
