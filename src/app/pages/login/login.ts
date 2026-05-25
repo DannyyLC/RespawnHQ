@@ -100,7 +100,7 @@ export class Login {
   }
 
   private async navigateByRole(): Promise<void> {
-    const isAdmin = await this.authService.isAdmin();
-    this.router.navigate([isAdmin ? '/admin/tournaments' : '/home']);
+    await this.authService.isAdmin();
+    this.router.navigate(['/home']);
   }
 }

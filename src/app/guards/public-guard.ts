@@ -11,6 +11,6 @@ export const publicGuard: CanActivateFn = async () => {
   const user = await firstValueFrom(authService.currentUser$.pipe(first()));
   if (!user) return true;
 
-  const isAdmin = await authService.isAdmin();
-  return router.createUrlTree([isAdmin ? '/admin/tournaments' : '/home']);
+  await authService.isAdmin();
+  return router.createUrlTree(['/home']);
 };

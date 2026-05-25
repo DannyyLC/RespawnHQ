@@ -1,16 +1,16 @@
 <mat-toolbar class="app-navbar">
-  <a class="brand" [routerLink]="isAdmin ? '/admin/tournaments' : '/home'">RespawnHQ</a>
+  <a class="brand" routerLink="/home">RespawnHQ</a>
 
   <nav class="nav-links" aria-label="Navegacion principal">
+    <a mat-button routerLink="/home" routerLinkActive="active-link">Inicio</a>
+    <a mat-button routerLink="/standings" routerLinkActive="active-link">Posiciones</a>
+    <a mat-button routerLink="/schedule" routerLinkActive="active-link">Calendario</a>
+
     @if (isAdmin) {
       <a mat-button routerLink="/admin/tournaments" routerLinkActive="active-link">Torneos</a>
       <a mat-button routerLink="/admin/teams" routerLinkActive="active-link">Equipos</a>
       <a mat-button routerLink="/admin/players" routerLinkActive="active-link">Jugadores</a>
       <a mat-button routerLink="/admin/news" routerLinkActive="active-link">Noticias</a>
-    } @else {
-      <a mat-button routerLink="/home" routerLinkActive="active-link">Inicio</a>
-      <a mat-button routerLink="/standings" routerLinkActive="active-link">Posiciones</a>
-      <a mat-button routerLink="/schedule" routerLinkActive="active-link">Calendario</a>
     }
   </nav>
 
