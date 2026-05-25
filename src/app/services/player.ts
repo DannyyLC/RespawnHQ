@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { FirestoreCrudService } from './firestore-crud.service';
-import { Torneo } from '../models/torneo.model';
+import { Jugador } from '../models/jugador.model';
 
 @Injectable({ providedIn: 'root' })
-export class TournamentService extends FirestoreCrudService<Torneo> {
+export class PlayerService extends FirestoreCrudService<Jugador> {
   constructor() {
-    super('torneos');
+    super('jugadores');
   }
 }
