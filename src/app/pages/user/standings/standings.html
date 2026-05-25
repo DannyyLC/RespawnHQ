@@ -1,6 +1,93 @@
 <app-navbar />
 
-<main class="placeholder-page">
-  <h1>Posiciones</h1>
-  <p>Tabla de posiciones pendiente.</p>
+<main class="standings-page">
+  <section class="page-header">
+    <div>
+      <p class="eyebrow">RespawnHQ</p>
+      <h1>Posiciones</h1>
+    </div>
+  </section>
+
+  <mat-card class="filter-card">
+    <mat-card-content>
+      <mat-form-field appearance="outline">
+        <mat-label>Torneo</mat-label>
+        <mat-select [formControl]="tournamentControl">
+          @for (tournament of tournaments; track tournament.id) {
+            <mat-option [value]="tournament.id">{{ tournament.nombre }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      @if (selectedTournament) {
+        <div class="tournament-summary">
+          <strong>{{ selectedTournament.juego }}</strong>
+          <span>{{ selectedTournament.premio }}</span>
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="table-card">
+    <mat-card-header>
+      <mat-card-title>Tabla de posiciones</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (loading) {
+        <p class="state-message">Cargando posiciones...</p>
+      } @else if (tournaments.length === 0) {
+        <p class="state-message">Todavia no hay torneos publicados.</p>
+      } @else if (standings.length === 0) {
+        <p class="state-message">Este torneo todavia no tiene equipos registrados.</p>
+      } @else {
+        <div class="table-wrap">
+          <table mat-table [dataSource]="standings">
+            <ng-container matColumnDef="position">
+              <th mat-header-cell *matHeaderCellDef>#</th>
+              <td mat-cell *matCellDef="let row; let i = index">{{ i + 1 }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="team">
+              <th mat-header-cell *matHeaderCellDef>Equipo</th>
+              <td mat-cell *matCellDef="let row">
+                <span class="team-name">{{ row.team.nombre }}</span>
+                <span class="team-tag">{{ row.team.tag }}</span>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="region">
+              <th mat-header-cell *matHeaderCellDef>Region</th>
+              <td mat-cell *matCellDef="let row">{{ row.team.region }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="played">
+              <th mat-header-cell *matHeaderCellDef>J</th>
+              <td mat-cell *matCellDef="let row">{{ row.played }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="wins">
+              <th mat-header-cell *matHeaderCellDef>G</th>
+              <td mat-cell *matCellDef="let row">{{ row.wins }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="losses">
+              <th mat-header-cell *matHeaderCellDef>P</th>
+              <td mat-cell *matCellDef="let row">{{ row.losses }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="points">
+              <th mat-header-cell *matHeaderCellDef>Pts</th>
+              <td mat-cell *matCellDef="let row">
+                <strong>{{ row.points }}</strong>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          </table>
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
 </main>
