@@ -59,7 +59,7 @@ export class Login {
         ),
         'login-timeout'
       );
-      this.router.navigate(['/dashboard']);
+      await this.navigateByRole();
     } catch (error: any) {
       this.snackBar.open(this.getErrorMessage(error.code), 'Cerrar', { duration: 4000 });
     } finally {
@@ -71,7 +71,7 @@ export class Login {
     this.loading = true;
     try {
       await withTimeout(this.authService.loginWithGoogle(), 'google-login-timeout');
-      this.router.navigate(['/dashboard']);
+      await this.navigateByRole();
     } catch (error: any) {
       const message = error.message === 'google-login-timeout'
         ? 'El inicio con Google tardó demasiado. Intenta de nuevo.'
@@ -97,5 +97,10 @@ export class Login {
       default:
         return 'Ocurrió un error al iniciar sesión.';
     }
+  }
+
+  private async navigateByRole(): Promise<void> {
+    const isAdmin = await this.authService.isAdmin();
+    this.router.navigate([isAdmin ? '/admin/tournaments' : '/home']);
   }
 }

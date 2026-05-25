@@ -116,7 +116,7 @@ export class Register {
         this.form.value.password as string
       );
       this.snackBar.open('¡Cuenta creada exitosamente!', 'Cerrar', { duration: 3000 });
-      this.router.navigate(['/dashboard']);
+      this.router.navigate(['/home']);
     } catch (error: any) {
       this.snackBar.open(this.getErrorMessage(error.code), 'Cerrar', { duration: 4000 });
     } finally {

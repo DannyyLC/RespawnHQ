@@ -47,12 +47,15 @@ export class Dashboard implements OnInit {
       } else {
         console.info('[RespawnHQ Dashboard] Dashboard con perfil Firestore:', this.userData);
       }
+
+      this.redirectByRole();
     } catch (error) {
       console.error('[RespawnHQ Dashboard] Fallo al cargar perfil:', error);
       const reason = error instanceof Error && error.message === 'dashboard-timeout'
         ? 'Firestore tardó demasiado en responder.'
         : 'No se pudo cargar tu perfil desde Firestore.';
       this.useAuthFallback(reason);
+      this.redirectByRole();
     } finally {
       this.loading = false;
       this.cdr.detectChanges();
@@ -91,5 +94,9 @@ export class Dashboard implements OnInit {
   async logout(): Promise<void> {
     await this.authService.logout();
     this.router.navigate(['/login']);
+  }
+
+  private redirectByRole(): void {
+    this.router.navigate([this.userData?.rol === 'admin' ? '/admin/tournaments' : '/home']);
   }
 }
