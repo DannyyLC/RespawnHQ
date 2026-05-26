@@ -1,0 +1,131 @@
+$bp-mobile: 560px;
+$bp-tablet: 760px;
+$bp-desktop: 980px;
+$bp-nav: 1100px;
+
+@mixin mobile {
+  @media (max-width: #{$bp-mobile}) {
+    @content;
+  }
+}
+
+@mixin tablet-down {
+  @media (max-width: #{$bp-tablet}) {
+    @content;
+  }
+}
+
+@mixin desktop-down {
+  @media (max-width: #{$bp-desktop}) {
+    @content;
+  }
+}
+
+@mixin nav-down {
+  @media (max-width: #{$bp-nav}) {
+    @content;
+  }
+}
+
+@mixin responsive-table-cards {
+  @include nav-down {
+    .admin-table-card.mat-mdc-card {
+      background: transparent;
+      box-shadow: none;
+      border-radius: 0;
+      padding: 0;
+    }
+
+    .admin-table-card .mat-mdc-card-header {
+      padding-inline: 0;
+    }
+
+    .admin-table-card .mat-mdc-card-content {
+      padding: 0;
+
+      &:first-child {
+        padding-top: 0;
+      }
+
+      &:last-child {
+        padding-bottom: 0;
+      }
+    }
+
+    .admin-table-card .table-wrap {
+      margin-top: 1rem;
+      overflow-x: visible;
+      width: 100%;
+    }
+
+    .admin-table-card table.mat-mdc-table,
+    .admin-table-card table {
+      display: block !important;
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100%;
+      box-sizing: border-box;
+      border-collapse: separate;
+    }
+
+    .admin-table-card thead,
+    .admin-table-card .mat-mdc-header-row {
+      display: none !important;
+    }
+
+    .admin-table-card tbody,
+    .admin-table-card .mdc-data-table__content {
+      display: block !important;
+      width: 100%;
+    }
+
+    .admin-table-card tr.mat-mdc-row,
+    .admin-table-card .mdc-data-table__row,
+    .admin-table-card tbody tr {
+      display: block !important;
+      width: 100% !important;
+      height: auto !important;
+      box-sizing: border-box;
+      margin-bottom: 1rem;
+      padding: 1rem 1.25rem;
+      border: 1px solid var(--mat-sys-outline-variant);
+      border-radius: 12px;
+      background: var(--mat-sys-surface-container-low);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .admin-table-card td.mat-mdc-cell,
+    .admin-table-card .mdc-data-table__cell,
+    .admin-table-card tbody td {
+      display: flex !important;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      width: 100%;
+      padding: 0.5rem 0;
+      border: none;
+      text-align: right;
+
+      &::before {
+        content: attr(data-label);
+        flex-shrink: 0;
+        font-weight: 600;
+        color: var(--mat-sys-on-surface-variant);
+        font-size: 0.78rem;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        text-align: left;
+      }
+
+      &:last-child {
+        padding-bottom: 0;
+      }
+    }
+
+    .admin-table-card .row-actions {
+      width: 100%;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+  }
+}

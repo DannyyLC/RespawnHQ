@@ -1,3 +1,5 @@
+@use '../../../../styles/breakpoints' as bp;
+
 .standings-page {
   max-width: 1180px;
   margin: 0 auto;
@@ -51,8 +53,28 @@
 }
 
 .table-wrap {
+  position: relative;
   overflow-x: auto;
   margin-top: 1rem;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 24px;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0), color-mix(in srgb, var(--mat-sys-surface) 70%, transparent));
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease-out;
+  }
+}
+
+@include bp.tablet-down {
+  .table-wrap::after {
+    opacity: 1;
+  }
 }
 
 table {
@@ -76,7 +98,7 @@ table {
   color: var(--mat-sys-on-surface-variant);
 }
 
-@media (max-width: 640px) {
+@include bp.mobile {
   .standings-page {
     padding: 1rem;
   }

@@ -1,3 +1,5 @@
+@use '../../../../styles/breakpoints' as bp;
+
 .teams-page {
   max-width: 1440px;
   margin: 0 auto;
@@ -94,18 +96,25 @@ mat-card-actions {
   flex-wrap: wrap;
 }
 
-@media (max-width: 980px) {
+@include bp.nav-down {
   .content-grid {
     grid-template-columns: 1fr;
   }
 }
 
-@media (max-width: 640px) {
-  .teams-page {
-    padding: 1rem;
-  }
-
+@include bp.tablet-down {
   .team-form {
     grid-template-columns: 1fr;
   }
+
+  .team-form mat-form-field {
+    min-width: 0;
+  }
 }
+
+@include bp.mobile {
+  .teams-page {
+    padding: 1rem;
+  }
+}
+

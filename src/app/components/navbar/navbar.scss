@@ -1,3 +1,5 @@
+@use '../../../styles/breakpoints' as bp;
+
 .app-navbar {
   gap: 0.75rem;
   position: sticky;
@@ -39,26 +41,99 @@
   white-space: nowrap;
 }
 
-@media (max-width: 760px) {
-  .app-navbar {
-    align-items: stretch;
-    height: auto;
-    min-height: 64px;
-    flex-wrap: wrap;
-    padding-block: 0.5rem;
-  }
+.hamburger {
+  display: none;
+}
 
-  .nav-links {
-    order: 3;
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: rgba(0, 0, 0, 0.45);
+  animation: fade-in 0.18s ease-out;
+}
+
+.app-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  width: 280px;
+  max-width: 85vw;
+  height: 100vh;
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.18);
+  transform: translateX(-100%);
+  transition: transform 0.22s ease-out;
+  overflow-y: auto;
+
+  &.open {
+    transform: translateX(0);
+  }
+}
+
+.drawer-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1.25rem 1.25rem 0.85rem;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+.drawer-brand {
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.drawer-user {
+  font-size: 0.85rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.drawer-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem 0.75rem 1.25rem;
+
+  a[mat-button] {
+    justify-content: flex-start;
     width: 100%;
-    overflow-x: auto;
-    scrollbar-width: none;
+    padding-inline: 0.75rem;
+    font-weight: 500;
+  }
+}
 
-    &::-webkit-scrollbar {
-      display: none;
-    }
+.drawer-section {
+  padding: 0.75rem 0.75rem 0.25rem;
+  color: var(--mat-sys-primary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.drawer-logout {
+  margin-top: 0.5rem;
+  color: var(--mat-sys-error);
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@include bp.nav-down {
+  .hamburger {
+    display: inline-flex;
   }
 
+  .nav-links,
+  .logout-desktop,
   .user-name {
     display: none;
   }

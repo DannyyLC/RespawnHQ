@@ -1,3 +1,5 @@
+@use '../../../../styles/breakpoints' as bp;
+
 .tournaments-page {
   max-width: 1440px;
   margin: 0 auto;
@@ -111,13 +113,23 @@ mat-card-actions {
   flex-wrap: wrap;
 }
 
-@media (max-width: 980px) {
+@include bp.nav-down {
   .content-grid {
     grid-template-columns: 1fr;
   }
 }
 
-@media (max-width: 640px) {
+@include bp.tablet-down {
+  .tournament-form {
+    grid-template-columns: 1fr;
+  }
+
+  .tournament-form mat-form-field {
+    min-width: 0;
+  }
+}
+
+@include bp.mobile {
   .tournaments-page {
     padding: 1rem;
   }
@@ -126,8 +138,5 @@ mat-card-actions {
     align-items: stretch;
     flex-direction: column;
   }
-
-  .tournament-form {
-    grid-template-columns: 1fr;
-  }
 }
+

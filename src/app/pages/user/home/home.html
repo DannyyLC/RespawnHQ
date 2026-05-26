@@ -36,11 +36,9 @@
       </mat-card>
     </section>
 
-    <section class="section-block">
-      <h2>Torneos</h2>
-      @if (otherTournaments.length === 0) {
-        <p class="state-message">No hay mas torneos por mostrar.</p>
-      } @else {
+    @if (otherTournaments.length > 0) {
+      <section class="section-block">
+        <h2>Torneos</h2>
         <div class="cards-grid">
           @for (tournament of otherTournaments; track tournament.id) {
             <mat-card class="tournament-card">
@@ -61,8 +59,8 @@
             </mat-card>
           }
         </div>
-      }
-    </section>
+      </section>
+    }
   }
 
   <section class="section-block news-section">

@@ -1,4 +1,14 @@
 <mat-toolbar class="app-navbar">
+  <button
+    mat-icon-button
+    type="button"
+    class="hamburger"
+    aria-label="Abrir menu"
+    (click)="openDrawer()"
+  >
+    <mat-icon>menu</mat-icon>
+  </button>
+
   <a class="brand" routerLink="/home">RespawnHQ</a>
 
   <nav class="nav-links" aria-label="Navegacion principal">
@@ -21,5 +31,57 @@
     <span class="user-name">{{ user.nombre }}</span>
   }
 
-  <button mat-stroked-button type="button" (click)="confirmLogout()">Cerrar sesion</button>
+  <button mat-stroked-button type="button" class="logout-desktop" (click)="confirmLogout()">
+    Cerrar sesion
+  </button>
 </mat-toolbar>
+
+@if (drawerOpen()) {
+  <div class="drawer-backdrop" (click)="closeDrawer()" aria-hidden="true"></div>
+}
+
+<aside class="app-drawer" [class.open]="drawerOpen()" aria-label="Menu de navegacion">
+  <div class="drawer-header">
+    <span class="drawer-brand">RespawnHQ</span>
+    @if (userData(); as user) {
+      <span class="drawer-user">{{ user.nombre }}</span>
+    }
+  </div>
+
+  <nav class="drawer-list">
+    <a mat-button routerLink="/home" routerLinkActive="active-link" (click)="closeDrawer()">
+      Inicio
+    </a>
+    <a mat-button routerLink="/standings" routerLinkActive="active-link" (click)="closeDrawer()">
+      Posiciones
+    </a>
+    <a mat-button routerLink="/schedule" routerLinkActive="active-link" (click)="closeDrawer()">
+      Calendario
+    </a>
+
+    @if (isAdmin()) {
+      <mat-divider />
+      <div class="drawer-section">Admin</div>
+      <a mat-button routerLink="/admin/tournaments" routerLinkActive="active-link" (click)="closeDrawer()">
+        Torneos
+      </a>
+      <a mat-button routerLink="/admin/teams" routerLinkActive="active-link" (click)="closeDrawer()">
+        Equipos
+      </a>
+      <a mat-button routerLink="/admin/players" routerLinkActive="active-link" (click)="closeDrawer()">
+        Jugadores
+      </a>
+      <a mat-button routerLink="/admin/matches" routerLinkActive="active-link" (click)="closeDrawer()">
+        Partidos
+      </a>
+      <a mat-button routerLink="/admin/news" routerLinkActive="active-link" (click)="closeDrawer()">
+        Noticias
+      </a>
+    }
+
+    <mat-divider />
+    <button mat-stroked-button type="button" class="drawer-logout" (click)="closeDrawer(); confirmLogout()">
+      Cerrar sesion
+    </button>
+  </nav>
+</aside>

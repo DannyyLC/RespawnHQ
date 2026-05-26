@@ -74,16 +74,27 @@ export class Home {
       });
   }
 
+  private readonly statusPriority: Record<TournamentStatus, number> = {
+    en_curso: 0,
+    proximo: 1,
+    finalizado: 2,
+  };
+
+  private get sortedTournaments(): Torneo[] {
+    return this.tournaments.slice().sort((a, b) => {
+      const priorityDiff = this.statusPriority[a.estado] - this.statusPriority[b.estado];
+      if (priorityDiff !== 0) return priorityDiff;
+      return this.toDate(b.fechaInicio).getTime() - this.toDate(a.fechaInicio).getTime();
+    });
+  }
+
   get featuredTournament(): Torneo | null {
-    return this.tournaments.find(tournament => tournament.estado === 'en_curso')
-      ?? this.tournaments.find(tournament => tournament.estado === 'proximo')
-      ?? this.tournaments[0]
-      ?? null;
+    return this.sortedTournaments[0] ?? null;
   }
 
   get otherTournaments(): Torneo[] {
     const featuredId = this.featuredTournament?.id;
-    return this.tournaments.filter(tournament => tournament.id !== featuredId);
+    return this.sortedTournaments.filter(tournament => tournament.id !== featuredId);
   }
 
   statusLabel(status: TournamentStatus): string {

@@ -1,7 +1,11 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { AuthService } from '../../services/auth';
 
@@ -25,7 +29,17 @@ export class ConfirmLogoutDialog {
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterLink, RouterLinkActive, MatButtonModule, MatDialogModule, MatToolbarModule],
+  imports: [
+    RouterLink,
+    RouterLinkActive,
+    MatButtonModule,
+    MatDialogModule,
+    MatDividerModule,
+    MatIconModule,
+    MatListModule,
+    MatSidenavModule,
+    MatToolbarModule,
+  ],
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss',
 })
@@ -36,6 +50,15 @@ export class Navbar {
 
   userData = this.authService.userProfile;
   isAdmin = computed(() => this.userData()?.rol === 'admin');
+  drawerOpen = signal(false);
+
+  openDrawer(): void {
+    this.drawerOpen.set(true);
+  }
+
+  closeDrawer(): void {
+    this.drawerOpen.set(false);
+  }
 
   confirmLogout(): void {
     const ref = this.dialog.open(ConfirmLogoutDialog, {

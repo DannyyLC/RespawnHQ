@@ -119,7 +119,7 @@
       }
     </mat-card>
 
-    <mat-card class="table-card">
+    <mat-card class="table-card admin-table-card">
       <mat-card-header>
         <mat-card-title>Partidos registrados</mat-card-title>
       </mat-card-header>
@@ -134,34 +134,34 @@
             <table mat-table [dataSource]="matches">
               <ng-container matColumnDef="torneo">
                 <th mat-header-cell *matHeaderCellDef>Torneo</th>
-                <td mat-cell *matCellDef="let match">{{ tournamentName(match.torneoId) }}</td>
+                <td mat-cell *matCellDef="let match" data-label="Torneo">{{ tournamentName(match.torneoId) }}</td>
               </ng-container>
 
               <ng-container matColumnDef="equipoA">
                 <th mat-header-cell *matHeaderCellDef>Equipo A</th>
-                <td mat-cell *matCellDef="let match">{{ teamLabel(match.equipoAId) }}</td>
+                <td mat-cell *matCellDef="let match" data-label="Equipo A">{{ teamLabel(match.equipoAId) }}</td>
               </ng-container>
 
               <ng-container matColumnDef="marcador">
                 <th mat-header-cell *matHeaderCellDef>Marcador</th>
-                <td mat-cell *matCellDef="let match">
+                <td mat-cell *matCellDef="let match" data-label="Marcador">
                   <span class="score">{{ match.marcadorA }} - {{ match.marcadorB }}</span>
                 </td>
               </ng-container>
 
               <ng-container matColumnDef="equipoB">
                 <th mat-header-cell *matHeaderCellDef>Equipo B</th>
-                <td mat-cell *matCellDef="let match">{{ teamLabel(match.equipoBId) }}</td>
+                <td mat-cell *matCellDef="let match" data-label="Equipo B">{{ teamLabel(match.equipoBId) }}</td>
               </ng-container>
 
               <ng-container matColumnDef="fecha">
                 <th mat-header-cell *matHeaderCellDef>Fecha</th>
-                <td mat-cell *matCellDef="let match">{{ formatDate(match.fecha) }}</td>
+                <td mat-cell *matCellDef="let match" data-label="Fecha">{{ formatDate(match.fecha) }}</td>
               </ng-container>
 
               <ng-container matColumnDef="estado">
                 <th mat-header-cell *matHeaderCellDef>Estado</th>
-                <td mat-cell *matCellDef="let match">
+                <td mat-cell *matCellDef="let match" data-label="Estado">
                   <span class="status-pill" [class.status-finalizado]="match.estado === 'finalizado'">
                     {{ statusLabel(match.estado) }}
                   </span>
@@ -170,7 +170,7 @@
 
               <ng-container matColumnDef="acciones">
                 <th mat-header-cell *matHeaderCellDef>Acciones</th>
-                <td mat-cell *matCellDef="let match">
+                <td mat-cell *matCellDef="let match" data-label="Acciones">
                   <div class="row-actions">
                     <button mat-stroked-button type="button" (click)="editMatch(match)">
                       Editar
